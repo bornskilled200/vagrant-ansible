@@ -8,11 +8,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   #Add any alias:
   config.hostsupdater.aliases = [
-    "app.dev",
-    "phpmyadmin.app.dev"
+    "app.dev"
   ]
 
-  config.vm.synced_folder ".", "/vagrant", :nfs => true
+  #config.vm.synced_folder ".", "/vagrant", :nfs => true
 
   #Fix for Ansible bug resulting in an encoding error
   ENV['PYTHONIOENCODING'] = "utf-8"

@@ -1,3 +1,0 @@
-[submodule "ansible/roles/bennojoy.nginx"]
-	path = ansible/roles/bennojoy.nginx
-	url = https://github.com/bennojoy/nginx.git
