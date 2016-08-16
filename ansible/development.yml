@@ -1,6 +1,6 @@
 ---
 - name: Deploys nginx
-  hosts: development
+  hosts: default
   user: vagrant
   become: yes
 
