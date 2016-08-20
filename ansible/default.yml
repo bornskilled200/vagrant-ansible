@@ -1,0 +1,44 @@
+---
+- name: Make sure python2 is installed
+  hosts: default
+  user: vagrant
+  gather_facts: no
+  become: yes
+  pre_tasks:
+    - name: 'install python2'
+      raw: sudo apt-get -y install python-simplejson
+
+- name: Deploys nginx
+  hosts: default
+  user: vagrant
+  become: yes
+
+  vars:
+    jenkins_url_prefix: "/secure/jenkins"
+    
+  roles:
+    - system
+    - geerlingguy.jenkins
+    - role: jdauphant.nginx
+      nginx_http_params:
+        - access_log /var/log/nginx/access.log
+        - error_log /var/log/nginx/error.log                                    
+        - sendfile "on"                                      
+        - tcp_nopush "on"
+        - tcp_nodelay "on"
+        - keepalive_timeout "65"
+
+      nginx_sites:
+        default:
+          - listen 80
+          - server_name localhost
+          - root /usr/share/nginx/html
+          - index index.html
+          - location / { try_files $uri $uri/ /index.html; }
+          - location /secure/jenkins { proxy_pass http://127.0.0.1:8080/secure/jenkins/; }
+
+        # Redirect www.app.dev to app.dev
+        www.app:
+          - listen 80
+          - server_name www.app.dev
+          - rewrite ^ http://app.dev$uri permanent

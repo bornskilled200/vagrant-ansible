@@ -1,9 +1,0 @@
----
-- name: Deploys nginx
-  hosts: default
-  user: vagrant
-  become: yes
-
-  roles:
-    - system
-    - bennojoy.nginx
