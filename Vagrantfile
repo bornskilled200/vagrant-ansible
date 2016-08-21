@@ -5,6 +5,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "private_network", ip: "192.168.13.37"
   config.vm.hostname = "appdev"
 
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--ostype", "Ubuntu_64"]
+  end
+
   #Add any alias:
   config.hostsupdater.aliases = [
     "app.dev"

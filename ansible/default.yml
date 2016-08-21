@@ -35,10 +35,31 @@
           - root /usr/share/nginx/html
           - index index.html
           - location / { try_files $uri $uri/ /index.html; }
-          - location /secure/jenkins { proxy_pass http://127.0.0.1:8080/secure/jenkins/; }
+          - location /secure/ { return 301  https://127.0.0.1:8000$request_uri; }
+          - proxy_cache cache
+          - proxy_cache_lock on
+          - proxy_cache_valid 200 1s
+          - proxy_cache_use_stale updating
+          - location /secure/jenkins { proxy_pass http://jenkins/secure/jenkins/; }
+          - location = /jenkins/rss { proxy_pass http://jenkins/secure/jenkins/rss; }
+          - location = /jenkins/jnlpJars { proxy_pass http://jenkins/secure/jenkins/jnlpJars; }
+          - location = /jenkins/tcpSlaveAgentListener { proxy_pass http://jenkins/secure/jenkins/tcpSlaveAgentListener; }
 
         # Redirect www.app.dev to app.dev
         www.app:
           - listen 80
           - server_name www.app.dev
           - rewrite ^ http://app.dev$uri permanent
+
+      nginx_configs:
+        proxy:
+            - proxy_set_header Host $http_host
+            - proxy_set_header X-Real-IP $remote_addr
+            - proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for
+            - proxy_set_header X-Forwarded-Proto $scheme
+            - proxy_cache_path /tmp/cache keys_zone=cache:10m levels=1:2 inactive=600s max_size=100m
+        upstream:
+            - upstream jenkins { server 127.0.0.1:8080; }
+        gzip:
+            - gzip on
+            - gzip_disable msie6
